@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      
+            <script src="https://s3.amazonaws.com/stitch-sdks/js/bundles/4.0.0/stitch.js"></script>
+        <script>
+    // Initialize the App Client
+      const client = stitch.Stitch.initializeDefaultAppClient("hw2-gdqwt");
+      // Get a MongoDB Service Client
+      const mongodb = client.getServiceClient(
+        stitch.RemoteMongoClient.factory,
+        "mongodb-atlas"
+      );
+      // Get a reference to the blog database
+      const db = mongodb.db("CloudHw2");
+        function welcommer(){
+            var url = document.location.href;
+            var params = url.split('?')[1];
+            var productName = params.split('=');
+            var params = url.split('?')[2];
+            var username = params.split('=');
+            var returnval = productName[1] +","+ username[1];
+            return returnval;
+        }
+        function displayTableOnLoad(){
+          document.getElementById("body").align="middle";
+          var h1 = document.createElement('h1');
+          h1.align="middle";                
+          var h1Text = "E-Bay Clone Ceng 495 Hw2";
+          h1.innerHTML = h1Text;                      
+          document.getElementById("body").appendChild(h1); 
+          var h2 = document.createElement('h2');   
+          h2.align="middle";         
+          var h2Text = "Logged in as " + (welcommer().split(","))[1];         
+          h2.innerHTML = h2Text;                      
+          document.getElementById("body").appendChild(h2); 
+          var h3 = document.createElement('h3');
+          h3.align="middle";                
+          var h3Text = "You can see your search ["+(welcommer().split(","))[0]+"], Buy Items and Rate a User";
+          h3.innerHTML = h3Text;                      
+          document.getElementById("body").appendChild(h3); 
+          var h3_1 = document.createElement('h3'); 
+          h3_1.align="middle";               
+          var h3_1Text = "The Results are Shown Below";
+          h3_1.innerHTML = h3_1Text;                      
+          document.getElementById("body").appendChild(h3_1); 
+          var input = document.createElement('input');
+          input.type="button";
+          input.value="Go to Home Page";
+          input.onclick= function () {window.location = 'index.html'};
+          document.getElementById("body").appendChild(input);
+          if((welcommer().split(","))[1]!="anonymous"){
+            var input1 = document.createElement('input');
+            input1.type="button";
+            input1.value="Go to Your Login Page";
+            input1.onclick= function () {window.location = 'login.html' + "?user="+ (welcommer().split(","))[1]};
+            document.getElementById("body").appendChild(input1);
+          }
+          buy();
+          // client.auth
+          // .loginWithCredential(new stitch.AnonymousCredential())
+          // .then(displayTable)
+          // .catch(console.error);
+          client.auth
+          .loginWithCredential(new stitch.AnonymousCredential())
+          .then(displayTable2)
+          .catch(console.error);
+        }
+
+        function displayTable2() {
+          
+        document.getElementById("table2").innerHTML = "";
+            var tr01 = document.createElement('tr');
+            document.getElementById("table2").appendChild(tr01);
+            var th11 = document.createElement('th');
+            th11.className = "tg-1wig";
+            th11.innerHTML = "Product Name"
+            var th21 = document.createElement('th');
+            th21.className = "tg-1wig";
+            th21.innerHTML = "Photo"
+            var th31 = document.createElement('th');
+            th31.className = "tg-1wig";
+            th31.innerHTML = "Price"
+            var th41 = document.createElement('th');
+            th41.className = "tg-1wig";
+            th41.innerHTML = "Quantity"
+            var th51 = document.createElement('th');
+            th51.className = "tg-1wig";
+            th51.innerHTML = "Seller Name"
+            var th61 = document.createElement('th');
+            th61.className = "tg-1wig";
+            th61.innerHTML = "Seller Rating"
+            var th71 = document.createElement('th');
+            th71.className = "tg-1wig";
+            th71.innerHTML = "Product Status"
+            var th81 = document.createElement('th');
+            th81.className = "tg-1wig";
+            th81.innerHTML = "Operation"
+           
+            tr01.appendChild(th11);
+            tr01.appendChild(th21);
+            tr01.appendChild(th31);
+            tr01.appendChild(th41);
+            tr01.appendChild(th51);
+            tr01.appendChild(th61);
+            tr01.appendChild(th71);
+            tr01.appendChild(th81);
+           
+            db.collection("products")
+                .find({}, {limit: 1000})
+                .asArray()
+                .then(docs => {
+                const html = docs.map(doc => {
+                  if(doc.ProductName==(welcommer().split(","))[0] || (welcommer().split(","))[0]==""){
+  
+                    var td11 = document.createElement('td');
+                    td11.className = "product_class";
+                    var td21 = document.createElement('td');
+                    var td31 = document.createElement('td');
+                    var td41 = document.createElement('td');
+                    td41.className = "product_quantity";
+                    var td51 = document.createElement('td');
+                    var td61 = document.createElement('td');
+                    var td71 = document.createElement('td');
+                    var td81 = document.createElement('td');
+                   
+                    var tr1 = document.createElement('tr');
+                    document.getElementById("table2").appendChild(tr1);
+                    td11.appendChild(document.createTextNode(doc.ProductName));
+                    var myimg = document.createElement('img');
+                    myimg.src = doc.Photo;
+                    myimg.height=100;
+                    myimg.width=100;
+                    td21.appendChild(myimg);
+                    td31.appendChild(document.createTextNode(doc.Price));
+                    td31.id="product_price";
+                    td41.appendChild(document.createTextNode(doc.Quantity));
+                    th41.id="product_quantity";
+                    td51.appendChild(document.createTextNode(doc.SellerName));
+                    db.collection("users").find({}).asArray()
+                    .then(docs1 => {
+                      console.log("hshs");
+                      const html1 = docs1.map(doc1 => {
+                       
+                        if(doc1.Username==doc.SellerName){
+                          var sum=0;
+                          for(var i=0;i<(doc1.Rating).length;i++){
+                            console.log("ra:", (doc.Rating)[i]);
+                              sum += parseInt( (doc1.Rating)[i], 10 );
+                          }
+                          var avg = sum/(doc.Rating).length;
+                          td61.appendChild(document.createTextNode(avg));
+                         
+                        }
+                      })
+                    });
+                   
+                    td71.appendChild(document.createTextNode(doc.ProductStatus));
+                    var buy_button = document.createElement('input');
+                    buy_button.value="Buy";
+                    buy_button.type="button";
+                    buy_button.style="border: 2px solid green;border-radius: 4px;"
+                    buy_button.addEventListener('click', function(){
+                      if(doc.ProductStatus=="Sold"){
+                          alert("Product Already Sold");
+                          return;
+                      }else if(doc.SellerName==(welcommer().split(","))[1]){
+                        alert("You cannot buy Your Products");
+                        return;
+                      }else{
+                        var withdraw = doc.Price;
+                        var old = document.getElementById("user_wallet").innerHTML.split(':')[1];
+                        var newWallet = (parseFloat(old) - parseFloat(withdraw));
+                       
+                        if(newWallet<0){
+                           withdraw="";
+                           alert("You don't have enough money to Buy this Product");
+                           return;
+                         }else{
+                          let quantityp = doc.Quantity;
+                          console.log("qq:",quantityp);
+                          quantityp--;
+                          if(isNaN(quantityp)){quantityp=0;}
+                          var userval = {Username:(welcommer().split(","))[1]};
+                          var storeval = {$addToSet:{OrderHistory:doc.ProductName}};
+                          db.collection("users").updateOne(userval,storeval);
+                          if(quantityp==0){
+                            var myquery = {ProductName: doc.ProductName};
+                            var newvalues = {$set:{ProductStatus:"Sold", Quantity:quantityp}};
+                            db.collection("products").updateOne(myquery,newvalues).then(displayTable2);
+                          }else{
+                            var myquery = {ProductName: doc.ProductName};
+                            var newvalues = {$set:{Quantity:quantityp}};
+                            db.collection("products").updateOne(myquery,newvalues).then(displayTable2);
+                          }
+                          if(isNaN(newWallet)){newWallet=0;}var myquery = {Username: (welcommer().split(","))[1]};
+                          var newvalues = {$set:{Wallet:newWallet}};
+                          db.collection("users").updateOne(myquery,newvalues).then(buy);
+                         }
+                        while(true){
+                          var rate = prompt("Please enter your Rate about product");
+                          if(rate <= 5 && rate >=0){
+                            var userval = {Username:doc.SellerName};
+                            var rateval = {$push:{Rating:parseInt(rate)}};
+                            db.collection("users").updateOne(userval,rateval);
+                            break;
+                          }else{
+                            alert("Rate value should be between 0 and 5");
+                          }
+                        }
+                      }
+                    });
+                    
+                    td81.appendChild(buy_button);
+          
+                    tr1.appendChild(td11);
+                    tr1.appendChild(td21);
+                    tr1.appendChild(td31);
+                    tr1.appendChild(td41);
+                    tr1.appendChild(td51);
+                    tr1.appendChild(td61);
+                    tr1.appendChild(td71);
+                    tr1.appendChild(td81);
+                   
+                  }else if((welcommer().split(","))[0]=="" && (welcommer().split(","))[1]=="anonymous"){
+                    var td11 = document.createElement('td');
+                    td11.className = "product_class";
+                    var td21 = document.createElement('td');
+                    var td31 = document.createElement('td');
+                    var td41 = document.createElement('td');
+                    td41.className = "product_quantity";
+                    var td51 = document.createElement('td');
+                    var td61 = document.createElement('td');
+                    var td71 = document.createElement('td');
+                    var td81 = document.createElement('td');
+                  
+                    var tr1 = document.createElement('tr');
+                    document.getElementById("table2").appendChild(tr1);
+                    td11.appendChild(document.createTextNode(doc.ProductName));
+                    var myimg = document.createElement('img');
+                    myimg.src = doc.Photo;
+                    myimg.height=100;
+                    myimg.width=100;
+                    td21.appendChild(myimg);
+                    td31.appendChild(document.createTextNode(doc.Price));
+                    td31.id="product_price";
+                    td41.appendChild(document.createTextNode(doc.Quantity));
+                    th41.id="product_quantity";
+                    td51.appendChild(document.createTextNode(doc.SellerName));
+                    db.collection("users").find({}).asArray()
+                    .then(docs1 => {
+                      
+                      const html1 = docs1.map(doc1 => {
+                        
+                        if(doc1.Username==doc.SellerName){
+                         
+                          var sum1=0;
+                          for(var j=0;j<(doc1.Rating).length;j++){
+                            
+                              sum1 += parseInt( (doc1.Rating)[j], 10 );
+                          }
+                          var avg1 = sum1/(doc1.Rating).length;
+                          td61.appendChild(document.createTextNode(avg1));
+                         
+                        }
+                      })
+                    });
+                    td71.appendChild(document.createTextNode(doc.ProductStatus));
+                  
+                   
+                    tr1.appendChild(td11);
+                    tr1.appendChild(td21);
+                    tr1.appendChild(td31);
+                    tr1.appendChild(td41);
+                    tr1.appendChild(td51);
+                    tr1.appendChild(td61);
+                    tr1.appendChild(td71);
+                    tr1.appendChild(td81);
+                  
+                  }      
+
+        })
+            ;
+            /*document.getElementById("table").innerHTML=html;*/
+        })
+      }
+      function buy(){
+        var balance = document.getElementById("balance");
+        balance.innerHTML="";
+          var h3_2 = document.createElement('h3');
+          h3_2.align="middle";
+          h3_2.id="user_wallet";
+
+            db.collection("users")
+                .find({}, {limit: 1000})
+                .asArray()
+                .then(docs => {
+                const html = docs.map(doc => {
+                  if(doc.Username==(welcommer().split(","))[1]){
+                    console.log(parseInt(doc.Wallet));
+                    h3_2.innerHTML = "Wallet: " + parseInt(doc.Wallet);
+                  }    
+
+                })
+                    ;
+                    /*document.getElementById("table").innerHTML=html;*/
+                });
+                
+        
+          
+        
+          balance.appendChild(h3_2);
+      }
+     
+      
+        </script>
+        <style>
+          .border{
+            border: 10px solid green;
+            padding: 20px;
+            margin: 20px;
+            clear: both;
+      }
+      .tg {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        .tg td {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            padding: 10px 5px;
+            border-style: solid;
+            border-width: 1px;
+            overflow: hidden;
+            word-break: normal;
+            border-color: black;
+            text-align: center;
+        }
+
+        .tg th {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            font-weight: normal;
+            padding: 10px 5px;
+            border-style: solid;
+            border-width: 1px;
+            overflow: hidden;
+            word-break: normal;
+            border-color: black;
+        }
+
+        .tg .tg-1wig {
+            font-weight: bold;
+            text-align: left;
+            vertical-align: top;
+            text-align: center;
+        }
+
+        .tg .tg-0lax {
+            text-align: left;
+            vertical-align: top
+        }
+        input[type="text"]{
+          border: 2px solid green;
+          border-radius: 4px;
+        }
+        </style>
+    </head>
+<body onload="displayTableOnLoad()">
+    <div id="body" class="border"></div> 
+    <div class="border" id="balance"></div>
+    <div id="products" class="border">
+        <h3 align="middle">Below you can see your products</h3>
+        <table class="tg" id="table2" style="margin: 0px auto;" width="400"></table>
+    </div>	
+    <footer align="middle">
+      <a href="https://www.linkedin.com/in/STalhaKosar/" title="LinkedIn" class="footer" target="_blank">&copy; Copyright 2019 Sinan Talha KOSAR</a>
+    </footer>	
+</body>
+</html>

@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      
+        <title>Ceng 495 Hw2 - Login Page</title>
+            <script src="https://s3.amazonaws.com/stitch-sdks/js/bundles/4.0.0/stitch.js"></script>
+        <script>
+    // Initialize the App Client
+      const client = stitch.Stitch.initializeDefaultAppClient("hw2-gdqwt");
+      // Get a MongoDB Service Client
+      const mongodb = client.getServiceClient(
+        stitch.RemoteMongoClient.factory,
+        "mongodb-atlas"
+      );
+      // Get a reference to the blog database
+      const db = mongodb.db("CloudHw2");
+        function welcommer(){
+            var url = document.location.href;
+            var params = url.split('?')[1];
+            var userName = params.split('=');
+            return userName[1];
+        }
+        function displayTableOnLoad(){
+          document.getElementById("body").align="middle";
+          var h1 = document.createElement('h1');
+          h1.align="middle";                
+          var h1Text = "E-Bay Clone Ceng 495 Hw2";
+          h1.innerHTML = h1Text;                      
+          document.getElementById("body").appendChild(h1); 
+          var h2 = document.createElement('h2');   
+          h2.align="middle";             
+          var h2Text = "Welcome " + welcommer();         
+          h2.innerHTML = h2Text;                      
+          document.getElementById("body").appendChild(h2); 
+          var h3 = document.createElement('h3');
+          h3.align="middle";                
+          var h3Text = "You can Deposit and Withdraw Money, Put Product/s on Sale, Drop Product/s, Search Items and see your Profile";
+          h3.innerHTML = h3Text;                      
+          document.getElementById("body").appendChild(h3); 
+          var h3_1 = document.createElement('h3'); 
+          h3_1.align="middle";               
+          var h3_1Text = "Your Account Information is Shown Below";
+          h3_1.innerHTML = h3_1Text;                      
+          document.getElementById("body").appendChild(h3_1); 
+          var input = document.createElement('input');
+          input.type="button";
+          input.value="Go to Home Page";
+          input.onclick= function () {window.location = 'index.html'};
+          document.getElementById("body").appendChild(input);
+          client.auth
+          .loginWithCredential(new stitch.AnonymousCredential())
+          .then(displayTable)
+          .catch(console.error);
+          client.auth
+          .loginWithCredential(new stitch.AnonymousCredential())
+          .then(displayTable2)
+          .catch(console.error);
+        }
+        function displayTable() {
+          document.getElementById("table").innerHTML = "";
+            var tr0 = document.createElement('tr');
+            document.getElementById("table").appendChild(tr0);
+            var th1 = document.createElement('th');
+            th1.className = "tg-1wig";
+            th1.innerHTML = "Username"
+            var th2 = document.createElement('th');
+            th2.className = "tg-1wig";
+            th2.innerHTML = "Name"
+            var th3 = document.createElement('th');
+            th3.className = "tg-1wig";
+            th3.innerHTML = "Surname"
+            var th4 = document.createElement('th');
+            th4.className = "tg-1wig";
+            th4.innerHTML = "Wallet"
+            var th5 = document.createElement('th');
+            th5.className = "tg-1wig";
+            th5.innerHTML = "Rating"
+            var th6 = document.createElement('th');
+            th6.className = "tg-1wig";
+            th6.innerHTML = "Store"
+            var th7 = document.createElement('th');
+            th7.className = "tg-1wig";
+            th7.innerHTML = "Order History"
+            tr0.appendChild(th1);
+            tr0.appendChild(th2);
+            tr0.appendChild(th3);
+            tr0.appendChild(th4);
+            tr0.appendChild(th5);
+            tr0.appendChild(th6);
+            tr0.appendChild(th7);
+            db.collection("users")
+                .find({}, {limit: 1000})
+                .asArray()
+                .then(docs => {
+                const html = docs.map(doc => {
+                  if(doc.Username==welcommer()){
+                    var td1 = document.createElement('td');
+                    td1.className = "user_class";
+                    var td2 = document.createElement('td');
+                    var td3 = document.createElement('td');
+                    var td4 = document.createElement('td');
+                    var td5 = document.createElement('td');
+                    td5.id="rating";
+                    var td6 = document.createElement('td');
+                    var td7 = document.createElement('td');
+                    var tr = document.createElement('tr');
+                    tr.className = "user_class2";
+                    document.getElementById("table").appendChild(tr);
+                    td1.appendChild(document.createTextNode(doc.Username));
+                    td1.id="u_name";
+                    td2.appendChild(document.createTextNode(doc.Name));
+                    td3.appendChild(document.createTextNode(doc.Surname));
+                    td4.appendChild(document.createTextNode(doc.Wallet));
+                    td4.id="user_wallet";
+                    // if((doc.Rating).length==0){
+                    //     console.log("RARARAR");
+                    //     doc.Rating=[0];}
+                    var sum=0;
+                    for(var i=0;i<(doc.Rating).length;i++){
+                        sum += parseInt( (doc.Rating)[i], 10 );
+                    }
+                    var avg = sum/((doc.Rating).length-1);
+                    td5.appendChild(document.createTextNode(avg));
+                    td5.id="seller_rating";
+                    td6.appendChild(document.createTextNode(doc.Store));
+                    td7.appendChild(document.createTextNode(doc.OrderHistory));
+                    tr.appendChild(td1);
+                    tr.appendChild(td2);
+                    tr.appendChild(td3);
+                    tr.appendChild(td4);
+                    tr.appendChild(td5);
+                    tr.appendChild(td6);
+                    tr.appendChild(td7);
+                  }
+                    
+
+        })
+            ;
+            /*document.getElementById("table").innerHTML=html;*/
+        })
+        
+        }
+        function displayTable2() {
+        document.getElementById("table2").innerHTML = "";
+            var tr01 = document.createElement('tr');
+            document.getElementById("table2").appendChild(tr01);
+            var th11 = document.createElement('th');
+            th11.className = "tg-1wig";
+            th11.innerHTML = "Product Name"
+            var th21 = document.createElement('th');
+            th21.className = "tg-1wig";
+            th21.innerHTML = "Photo"
+            var th31 = document.createElement('th');
+            th31.className = "tg-1wig";
+            th31.innerHTML = "Price"
+            var th41 = document.createElement('th');
+            th41.className = "tg-1wig";
+            th41.innerHTML = "Quantity"
+            var th51 = document.createElement('th');
+            th51.className = "tg-1wig";
+            th51.innerHTML = "Product Status"
+            var th61 = document.createElement('th');
+            th61.className = "tg-1wig";
+            th61.innerHTML = "Product Operation"
+            tr01.appendChild(th11);
+            tr01.appendChild(th21);
+            tr01.appendChild(th31);
+            tr01.appendChild(th41);
+            tr01.appendChild(th51);
+            tr01.appendChild(th61);
+            db.collection("products")
+                .find({}, {limit: 1000})
+                .asArray()
+                .then(docs => {
+                const html = docs.map(doc => {
+                  if(doc.SellerName==welcommer()){
+                    var td11 = document.createElement('td');
+                    td11.className = "product_class";
+                    var td21 = document.createElement('td');
+                    var td31 = document.createElement('td');
+                    var td41 = document.createElement('td');
+                    var td51 = document.createElement('td');
+                    td51.className = "product_quantity";
+                    var td61 = document.createElement('td');
+                    var tr1 = document.createElement('tr');
+                    document.getElementById("table2").appendChild(tr1);
+                    td11.appendChild(document.createTextNode(doc.ProductName));
+                    var myimg = document.createElement('img');
+                    myimg.src = doc.Photo;
+                    myimg.height=100;
+                    myimg.width=100;
+                    td21.appendChild(myimg);
+                    td31.appendChild(document.createTextNode(doc.Price));
+                    td41.appendChild(document.createTextNode(doc.Quantity));
+                    td51.appendChild(document.createTextNode(doc.ProductStatus));
+                    
+                    var sale_button = document.createElement('input');
+                    sale_button.value="Sell";
+                    sale_button.type="button";
+                    sale_button.style="border: 2px solid green;border-radius: 4px;"
+                    sale_button.addEventListener('click', function(){
+                      if(doc.ProductStatus=="Sale"){
+                         
+                          alert("Product Already on Sale");
+                          return;
+                      }else{
+                        var myquery = {ProductName: doc.ProductName};
+                        var newvalues = {$set:{ProductStatus:"Sale"}};
+                        db.collection("products").updateOne(myquery,newvalues).then(displayTable2);
+                      }
+                    });
+                    
+                    td61.appendChild(sale_button);
+                    var drop_button = document.createElement('input');
+                    drop_button.value="Drop";
+                    drop_button.type="button";
+                    drop_button.style="border: 2px solid green;border-radius: 4px;"
+                    drop_button.addEventListener('click', function(){
+                      if(doc.ProductStatus=="Dropped"){
+                          alert("Product Already Dropped");
+                          return;
+                      }else{
+                        var userval = {Username:welcommer()};
+                        var storeval = {$pull:{Store:doc.ProductName}};
+                        db.collection("users").updateOne(userval,storeval).then(displayTable);
+                        var myquery = {ProductName: doc.ProductName};
+                        var newvalues = {$set:{ProductStatus:"Dropped"}};
+                        db.collection("products").updateOne(myquery,newvalues).then(displayTable2);
+                      }
+                    });
+                    td61.appendChild(drop_button);
+                    tr1.appendChild(td11);
+                    tr1.appendChild(td21);
+                    tr1.appendChild(td31);
+                    tr1.appendChild(td41);
+                    tr1.appendChild(td51);
+                    tr1.appendChild(td61);
+                  }      
+
+        })
+            ;
+            /*document.getElementById("table").innerHTML=html;*/
+        })
+      }
+     function deleteAllProducts(){
+      db.collection("products").deleteMany({SellerName:welcommer()}).then(displayTable2);
+      var userval = {Username:welcommer()};
+      var storeval = {$set:{Store:[]}};
+      db.collection("users").updateOne(userval,storeval).then(displayTable);
+     }
+     function deposit(){
+      var addDeposit = document.getElementById("deposit").value;
+      console.log(addDeposit);
+      if(addDeposit != parseInt(addDeposit, 10)){
+        alert("Please Enter an Integer value");
+        return;
+      }
+      var old = document.getElementById("user_wallet").innerHTML;
+      console.log(old, addDeposit);
+      var newDeposit = parseFloat(addDeposit) + parseFloat(old);
+      if(isNaN(newDeposit)){newDeposit=0;}
+      var myquery = {Username: welcommer()};
+      var newvalues = {$set:{Wallet:newDeposit}};
+      db.collection("users").updateOne(myquery,newvalues).then(displayTable);
+      addDeposit = "";
+     }
+
+     function withdraw(){
+      var withdraw = document.getElementById("withdraw").value;
+      if(withdraw != parseInt(withdraw,10)){
+        alert("Please Enter an Integer value");
+        return;
+      }
+      var old = document.getElementById("user_wallet").innerHTML;
+      console.log("old",old);
+      console.log("wd",withdraw);
+      var newWallet = (parseFloat(old) - parseFloat(withdraw));
+      console.log(newWallet);
+      if(newWallet<0){
+        withdraw="";
+        alert("You don't have enough money to withdraw");
+        return;
+      }
+      if(isNaN(newWallet)){newWallet=0;}
+      var myquery = {Username: welcommer()};
+      var newvalues = {$set:{Wallet:newWallet}};
+      db.collection("users").updateOne(myquery,newvalues).then(displayTable);
+      withdraw = "";
+     }
+
+      function addProduct() {
+            var user = document.getElementById("u_name").value;
+            const newProductName = document.getElementById("new_product_name");
+            const newProductPrice = document.getElementById("new_product_price");
+            const newProductQuantity = document.getElementById("new_product_quantity").value;
+            const newProductImage = document.getElementById("new_product_image");
+            var userval = {Username:welcommer()};
+            var storeval = {$addToSet:{Store:newProductName.value}};
+            db.collection("users").updateOne(userval,storeval).then(displayTable);
+        
+            var myquery = { ProductName: newProductName.value, SellerName:welcommer() };
+            var newvalues = { $set: {Photo: newProductImage.value,Price: newProductPrice.value,Quantity: newProductQuantity,SellerName:welcommer(),SellerRating:document.getElementById("seller_rating").innerHTML,ProductStatus:"Sale"}};
+            db.collection("products")
+            .updateOne(myquery, newvalues,{upsert:true}).then(displayTable2);
+            newProductName.value = "";
+            newProductPrice.value = "";
+            newProductQuantity.value = "";
+            newProductImage.value = "";
+        }
+        function productPage() {
+            const product = document.getElementById("search");
+            console.log("Redirecting to product page: ", product.value);
+            window.location = 'product.html' + '?product=' + product.value + "?user=" + welcommer();
+        }
+        </script>
+    <style>
+
+      .border{
+        border: 10px solid green;
+            padding: 20px;
+            margin: 20px;
+            clear: both;
+      }
+
+      .list {
+            border: 10px solid green;
+            padding: 20px;
+            margin: 20px;
+            clear: both;
+        }
+      .tg {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        .tg td {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            padding: 10px 5px;
+            border-style: solid;
+            border-width: 1px;
+            overflow: hidden;
+            word-break: normal;
+            border-color: black;
+            text-align: center;
+        }
+
+        .tg th {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            font-weight: normal;
+            padding: 10px 5px;
+            border-style: solid;
+            border-width: 1px;
+            overflow: hidden;
+            word-break: normal;
+            border-color: black;
+        }
+
+        .tg .tg-1wig {
+            font-weight: bold;
+            text-align: left;
+            vertical-align: top;
+            text-align: center;
+        }
+
+        .tg .tg-0lax {
+            text-align: left;
+            vertical-align: top
+        }
+        input[type="text"]{
+          border: 2px solid green;
+          border-radius: 4px;
+        }
+        ::-webkit-input-placeholder {
+            text-align: center;
+        }
+
+        :-moz-placeholder { /* Firefox 18- */
+            text-align: center;
+        }
+
+        ::-moz-placeholder { /* Firefox 19+ */
+            text-align: center;
+        }
+
+        :-ms-input-placeholder {
+            text-align: center;
+        }
+    </style>
+    </head>
+<body  onLoad="displayTableOnLoad()">
+<div id="body" class="border"></div> 
+<div class="border" align="middle">
+    <input type="text" id="deposit"><input type="submit" onClick="deposit()" value="Deposit Money">
+    <input type="text" id="withdraw"><input type="submit" onClick="withdraw()" value="Withdraw Money">
+    <input type="text" id="search" placeholder="Search..."><input type="submit" onClick="productPage()" value="Search a Product">
+    <!-- <input id="sell"><input type="submit" onClick="displayTableOnLoad()" value="Sell a Product">
+    <input id="rate"><input type="submit" onClick="displayTableOnLoad()" value="Rate a User"> -->
+    
+
+</div>
+<div id="users" class="border">
+    <h3 align="middle">Below you can see your profile data</h3>
+    <table class="tg" id="table" style="margin: 0px auto;" width="400"></table>
+</div>	
+<div id="product_sale" class="border" align="middle">
+    <h3>You can put a product on sale, just fill the information below</h3>
+    <table>
+        <tbody>
+        <tr>
+            <td>
+                Product Name:
+            </td>
+            <td>
+                (*)<input type="text"  id="new_product_name"></input> (Must be unique)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Price:
+            </td>
+            <td>
+                (*)<input type="text" id="new_product_price">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Quantity:
+            </td>
+            <td>
+                (*)<input type="text" id="new_product_quantity">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Image of Product:
+            </td>
+            <td>
+                (*)<input type="text" id="new_product_image">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="submit" onClick="addProduct()" id="python" value="Put on Sale">
+                <input id="drop" type="submit" onClick="deleteAllProducts()" value="Drop All Products">
+            </td>
+        </tr>
+        
+        </tbody>
+    </table>
+</div>
+  <div id="products" class="border">
+      <h3 align="middle">Below you can see your products</h3>
+      <table class="tg" id="table2" style="margin: 0px auto;" width="400"></table>
+  </div>
+  <footer align="middle">
+    <a href="https://www.linkedin.com/in/STalhaKosar/" title="LinkedIn" class="footer" target="_blank">&copy; Copyright 2019 Sinan Talha KOSAR</a>
+  </footer>	
+</body>
+</html>

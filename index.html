@@ -1,0 +1,344 @@
+<html>
+<head>
+    
+    <title>Ceng 495 Hw2 - Homepage</title>
+    <script src="https://s3.amazonaws.com/stitch-sdks/js/bundles/4.0.0/stitch.js"></script>
+    <script>
+        // Initialize the App Client
+        const client = stitch.Stitch.initializeDefaultAppClient("hw2-gdqwt");
+        // Get a MongoDB Service Client
+        const mongodb = client.getServiceClient(
+            stitch.RemoteMongoClient.factory,
+            "mongodb-atlas"
+        );
+        // Get a reference to the blog database
+        const db = mongodb.db("CloudHw2");
+
+        function displayUsers() {
+
+            document.getElementById("table").innerHTML = "";
+            var tr0 = document.createElement('tr');
+            document.getElementById("table").appendChild(tr0);
+            var th1 = document.createElement('th');
+            th1.className = "tg-1wig";
+            th1.innerHTML = "Username"
+            var th2 = document.createElement('th');
+            th2.className = "tg-1wig";
+            th2.innerHTML = "Name"
+            var th3 = document.createElement('th');
+            th3.className = "tg-1wig";
+            th3.innerHTML = "Surname"
+            tr0.appendChild(th1);
+            tr0.appendChild(th2);
+            tr0.appendChild(th3);
+            db.collection("users")
+                .find({}, {limit: 1000})
+                .asArray()
+                .then(docs => {
+                const html = docs.map(doc => {
+                    var td1 = document.createElement('td');
+            td1.className = "user_class";
+            var td2 = document.createElement('td');
+            var td3 = document.createElement('td');
+            var tr = document.createElement('tr');
+            tr.className = "user_class2";
+            document.getElementById("table").appendChild(tr);
+            td1.appendChild(document.createTextNode(doc.Username));
+            td2.appendChild(document.createTextNode(doc.Name));
+            td3.appendChild(document.createTextNode(doc.Surname));
+            tr.appendChild(td1);
+            tr.appendChild(td2);
+            tr.appendChild(td3);
+
+        })
+            ;
+            /*document.getElementById("table").innerHTML=html;*/
+        })
+
+        }
+
+        function displayUsersOnLoad() {
+            client.auth
+                .loginWithCredential(new stitch.AnonymousCredential())
+                .then(displayUsers)
+                .catch(console.error);
+        }
+
+        function addUser() {
+            const newUsername = document.getElementById("new_user_username");
+            var rows = document.getElementById('table').rows.length;
+            if (document.getElementById('table') != null) {
+                for (var i = 0; i < rows - 1; i++) {
+                    var deneme = document.querySelectorAll(".user_class");
+                    if (deneme[i].innerHTML == newUsername.value) {
+                        alert("Username must be UNIQUE");
+                        return;
+                    }
+                }
+            }
+            const newName = document.getElementById("new_user_name");
+            const newSurname = document.getElementById("new_user_surname");
+            console.log("add user", client.auth.user.id)
+            db.collection("users")
+                .insertOne({
+                    Username: newUsername.value,
+                    Name: newName.value,
+                    Surname: newSurname.value,
+                    Wallet: 0,
+                    Rating: [0],
+                    Store:[],
+                    OrderHistory:[]
+                })
+                .then(displayUsers);
+            newUsername.value = "";
+            newName.value = "";
+            newSurname.value = "";
+        }
+
+        function deleteAllUsers() {
+            db.collection("products").deleteMany({});
+            console.log("deleting all users");
+            db.collection("users").deleteMany({}).then(displayUsers);
+            // document.getElementById("table").innerHTML = "";
+            // var tr0 = document.createElement('tr');
+            // document.getElementById("table").appendChild(tr0);
+            // var th1 = document.createElement('th');
+            // th1.className = "tg-1wig";
+            // th1.innerHTML = "Username"
+            // var th2 = document.createElement('th');
+            // th2.className = "tg-1wig";
+            // th2.innerHTML = "Name"
+            // var th3 = document.createElement('th');
+            // th3.className = "tg-1wig";
+            // th3.innerHTML = "Surname"
+            // tr0.appendChild(th1);
+            // tr0.appendChild(th2);
+            // tr0.appendChild(th3);
+        }
+
+        function deleteUser() {
+            const deletedUser = document.getElementById("delete_user");
+            var rows = document.getElementById('table').rows.length;
+           
+            if (document.getElementById('table') != null) {
+            for (var i = 0; i < rows - 1; i++) {
+                var deneme = document.querySelectorAll(".user_class");
+               
+                if (deneme[i].innerHTML == deletedUser.value) {
+                    console.log("deleting user", deletedUser.value);
+                    db.collection("users").deleteOne({Username: deletedUser.value}).then(displayUsers);
+                   return;
+                }
+            }
+            alert("You cannot delete Non-existing User");
+            return;
+            }
+           
+        }
+
+        function loginUser() {
+            const loginUser = document.getElementById("login_user");
+            var rows = document.getElementById('table').rows.length;
+            var count= 0;
+            
+            if (document.getElementById('table') != null) {
+              count =0;
+            for (var i = 0; i < rows - 1; i++) {
+                var deneme = document.querySelectorAll(".user_class"); 
+                if(loginUser.value == deneme[i].innerHTML){
+                  count = 1;
+                }
+            }
+            if(parseInt(count)!=1){
+                loginUser.value = "";
+                alert("User not exist");
+                return;
+            }
+            }
+            console.log("loggin in as user", loginUser.value);
+            window.location = 'login.html' + '?user=' + loginUser.value;
+        }
+
+        function productPage() {
+            const product = document.getElementById("product_page");
+            console.log("Redirecting to product page: ", product.value);
+            window.location = 'product.html' + '?product=' + product.value + "?user=anonymous";
+        }
+
+    </script>
+
+
+    <style>
+      .border{
+        border: 10px solid green;
+            padding: 20px;
+            margin: 20px;
+            clear: both;
+      }
+
+        ::-webkit-input-placeholder {
+            text-align: center;
+        }
+
+        :-moz-placeholder { /* Firefox 18- */
+            text-align: center;
+        }
+
+        ::-moz-placeholder { /* Firefox 19+ */
+            text-align: center;
+        }
+
+        :-ms-input-placeholder {
+            text-align: center;
+        }
+
+        .tg {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        .tg td {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            padding: 10px 5px;
+            border-style: solid;
+            border-width: 1px;
+            overflow: hidden;
+            word-break: normal;
+            border-color: black;
+        }
+
+        .tg th {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            font-weight: normal;
+            padding: 10px 5px;
+            border-style: solid;
+            border-width: 1px;
+            overflow: hidden;
+            word-break: normal;
+            border-color: black;
+        }
+
+        .tg .tg-1wig {
+            font-weight: bold;
+            text-align: left;
+            vertical-align: top
+        }
+
+        .tg .tg-0lax {
+            text-align: left;
+            vertical-align: top
+        }
+        input[type="text"]{
+          border: 2px solid green;
+          border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body onLoad="displayUsersOnLoad()">
+<h1 align=middle class="border">Welcome to E-Bay Clone Ceng 495 Hw2</h1>
+
+<div class="border" align="middle">
+    <h3>Search an Item</h3>
+    <table>
+        <tbody>
+        <tr>
+            <td>
+                Search a Product:
+            </td>
+            <td>
+                <input type="text" id="product_page" placeholder="Search..."><input type="submit" onClick="productPage()"
+                                                                        value="Search">
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+
+</div>
+<div class="border" align="middle">
+    <h3>If you do not have an account, register below</h3>
+    <table>
+        <tbody>
+        <tr>
+            <td>
+                Username:
+            </td>
+            <td>
+                (*)<input type="text" id="new_user_username"></input> (Must be unique)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Name:
+            </td>
+            <td>
+                (*)<input type="text" id="new_user_name">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Surname:
+            </td>
+            <td>
+                (*)<input type="text" id="new_user_surname">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="submit" onClick="addUser()" id="python">
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="border" align="middle">
+    <h3>Here you can Login, Delete User or All Users</h3>
+    <table>
+        <tbody>
+        <tr>
+            <td>
+                Login as User:
+            </td>
+            <td>
+                <input type="text" id="login_user"><input type="submit" onClick="loginUser()" value="Login">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Delete User:
+            </td>
+            <td>
+                <input type="text" id="delete_user"><input type="submit" onClick="deleteUser()" value="Delete">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input id="delete_all_users" type="button" value="Delete All Users" onClick="deleteAllUsers()"
+                       class="button">
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+
+<div class="border">
+    <h3 align="middle">You can see the list of users below.</h3>
+    <hr>
+    <div id="users">
+        <table class="tg" id="table" style="margin: 0px auto;" width="400">
+
+
+        </table>
+    </div>
+    <hr>
+</div>
+<footer align="middle">
+    <a href="https://www.linkedin.com/in/STalhaKosar/" title="LinkedIn" class="footer" target="_blank">&copy; Copyright 2019 Sinan Talha KOSAR</a>
+  </footer>	
+</body>
+
+</html>
