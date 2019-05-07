@@ -4,7 +4,7 @@ E-Bay Clone is a basic CRUD webpages using MongoDB for database and Backend As A
 
 ## Installation
 
-Make sure that you have active internet connection first. Then
+Make sure that you have active internet connection first and use Google Chrome(preferable). Then
 
 ```bash
 open index.html
