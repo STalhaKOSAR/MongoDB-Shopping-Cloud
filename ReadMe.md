@@ -1,4 +1,4 @@
-# Ceng 495 Hw2 / E-Bay Clone
+## E-Bay Clone
 
 E-Bay Clone is a basic CRUD webpages using MongoDB for database and Backend As A Service(BaaS).
 
